@@ -40,10 +40,13 @@ func main() {
 	authRepo := repo.NewUsersRepo(db)
 	authSvc := services.NewAuthService(authRepo)
 
+	tasksRepo := repo.NewTasksRepo(db)
+	tasksSvc := services.NewTasksService(tasksRepo)
+
 	handlers.NewAuthHandlers(authSvc).WriteGroup(e.Group("/auth"))
 	handlers.NewBoardHandlers().WriteGroup(e.Group("/board"))
 	handlers.NewProjectHandlers().WriteGroup(e.Group("/project"))
-	handlers.NewTaskHandlers().WriteGroup(e.Group("/task"))
+	handlers.NewTaskHandlers(tasksSvc).WriteGroup(e.Group("/tasks"))
 
 	e.Logger.Fatal(e.Start(":" + cfg.Server.Port))
 }

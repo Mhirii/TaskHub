@@ -43,6 +43,7 @@ func (h *AuthHandlers) Login(c echo.Context) error {
 
 func (h *AuthHandlers) Register(c echo.Context) error {
 	var body dto.RegisterRequest
+
 	err := c.Bind(&body)
 	if err != nil {
 		return err

@@ -8,6 +8,7 @@ import (
 	"github.com/Mhirii/TaskHub/backend/dto"
 	"github.com/Mhirii/TaskHub/backend/models"
 	"github.com/Mhirii/TaskHub/backend/pkg/config"
+	"github.com/Mhirii/TaskHub/backend/pkg/roles"
 	"github.com/Mhirii/TaskHub/backend/repo"
 	"github.com/lestrrat-go/jwx/v3/jwa"
 	"github.com/lestrrat-go/jwx/v3/jwt"
@@ -66,7 +67,8 @@ func (s *authService) Register(username string, email string, password string) (
 	if err != nil {
 		return nil, err
 	}
-	user, err := s.repo.CreateUser(username, email, string(hashed))
+
+	user, err := s.repo.CreateUser(username, email, string(hashed), []string{})
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +100,11 @@ func (s *authService) Refresh(refreshToken string) (*ATokenResponse, error) {
 	if !ok {
 		return nil, errors.New("could not get subject from token")
 	}
-	user, err := s.repo.GetUserByUserOrEmail(sub)
+	userID, err := strconv.Atoi(sub)
+	if err != nil {
+		return nil, err
+	}
+	user, err := s.repo.GetUserByID(uint(userID))
 	if err != nil {
 		return nil, err
 	}
@@ -119,11 +125,11 @@ func JWTBuilder() *jwt.Builder {
 
 func GenerateTokenPair(user *models.Users) (string, string, int, error) {
 	id := strconv.Itoa(int(user.ID))
-	access, err := GenerateToken(id, user.Username, config.GetConfig().Auth.AccessExp)
+	access, err := GenerateToken(id, user.Username, roles.StringToRoles(user.Roles), config.GetConfig().Auth.AccessExp)
 	if err != nil {
 		return "", "", 0, err
 	}
-	refresh, err := GenerateToken(id, user.Username, config.GetConfig().Auth.RefreshExp)
+	refresh, err := GenerateToken(id, user.Username, roles.StringToRoles(user.Roles), config.GetConfig().Auth.RefreshExp)
 	if err != nil {
 		return "", "", 0, err
 	}
@@ -131,11 +137,16 @@ func GenerateTokenPair(user *models.Users) (string, string, int, error) {
 	return access, refresh, int(exp.Unix()), nil
 }
 
-func GenerateToken(id string, username string, exp int) (string, error) {
+func GenerateToken(id string, username string, roles []string, exp int) (string, error) {
 	builder := JWTBuilder()
 	cfg := config.GetConfig()
 	expiry := time.Now().Add(time.Duration(exp) * time.Second)
-	jwttoken, err := builder.Subject(string(id)).Expiration(expiry).Claim("username", username).Build()
+	jwttoken, err := builder.
+		Subject(string(id)).
+		Expiration(expiry).
+		Claim("username", username).
+		Claim("roles", roles).
+		Build()
 	if err != nil {
 		return "", err
 	}

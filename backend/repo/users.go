@@ -1,16 +1,19 @@
 package repo
 
 import (
+	"strings"
+
 	"github.com/Mhirii/TaskHub/backend/models"
 	"gorm.io/gorm"
 )
 
 type UsersRepo interface {
-	CreateUser(username string, email string, password string) (*models.Users, error)
+	CreateUser(username string, email string, password string, roles []string) (*models.Users, error)
 	GetUserByUsername(username string) (*models.Users, error)
 	GetUserByEmail(email string) (*models.Users, error)
 	GetUserByID(userID uint) (*models.Users, error)
 	GetUserByUserOrEmail(userOrEmail string) (*models.Users, error)
+	GetUsers() ([]*models.Users, error)
 	UpdateUser(user *models.Users) (*models.Users, error)
 	DeleteUser(userID uint) (*models.Users, error)
 }
@@ -22,8 +25,9 @@ func NewUsersRepo(db *gorm.DB) UsersRepo {
 	return &usersRepo{db: db}
 }
 
-func (r *usersRepo) CreateUser(username string, email string, password string) (*models.Users, error) {
-	user := models.Users{Username: username, Email: email, Password: password}
+func (r *usersRepo) CreateUser(username string, email string, password string, roles []string) (*models.Users, error) {
+	rolesStr := strings.Join(roles, "--")
+	user := models.Users{Username: username, Email: email, Password: password, Roles: rolesStr}
 	res := r.db.Create(&user)
 	if res.Error != nil {
 		return nil, res.Error
@@ -69,6 +73,16 @@ func (r *usersRepo) GetUserByUserOrEmail(userOrEmail string) (*models.Users, err
 	}
 
 	return &user, nil
+}
+
+func (r *usersRepo) GetUsers() ([]*models.Users, error) {
+	var users []*models.Users
+	res := r.db.Find(&users)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return users, nil
 }
 
 func (r *usersRepo) UpdateUser(user *models.Users) (*models.Users, error) {

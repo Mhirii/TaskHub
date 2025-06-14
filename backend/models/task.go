@@ -11,6 +11,7 @@ type Tasks struct {
 	BoardID   int `json:"board_id"`
 	ProjectID int `json:"project_id"`
 
+	Order      int      `json:"order"`
 	ParentID   int      `json:"parent_id"`
 	Status     int      `json:"status" gorm:"default:0"`   // 0 -> open, 1 -> closed
 	Priority   *int     `json:"priority" gorm:"default:0"` // 0 -> low, 1 -> medium, 2 -> high

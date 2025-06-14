@@ -13,3 +13,14 @@ auth:
   secret: secret-key-for-jwt
   access_exp: 86400
   refresh_exp: 604800
+
+rbac:
+  model_file: etc/model.conf
+  policy_file: etc/policy.csv
+  db:
+    host: localhost
+    port: 5432
+    user: pg
+    password: pg
+    name: taskhub
+    ssl_mode: disable

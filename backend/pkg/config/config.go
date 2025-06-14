@@ -4,6 +4,7 @@ type Config struct {
 	Server ServerConfig `yaml:"server"`
 	DB     DBConfig     `yaml:"db"`
 	Auth   AuthConfig   `yaml:"auth"`
+	RBAC   RBACConfig   `yaml:"rbac"`
 }
 
 type ServerConfig struct {
@@ -23,4 +24,10 @@ type AuthConfig struct {
 	Secret     string `yaml:"secret"`
 	AccessExp  int    `yaml:"access_exp"`
 	RefreshExp int    `yaml:"refresh_exp"`
+}
+
+type RBACConfig struct {
+	ModelFile  string   `yaml:"model_file"`
+	PolicyFile string   `yaml:"policy_file"`
+	DB         DBConfig `yaml:"db"`
 }
