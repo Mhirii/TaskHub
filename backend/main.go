@@ -2,14 +2,15 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"net/http"
 
 	"github.com/Mhirii/TaskHub/backend/handlers"
 	"github.com/Mhirii/TaskHub/backend/pkg/config"
 	"github.com/Mhirii/TaskHub/backend/pkg/infra"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	"github.com/Mhirii/TaskHub/backend/repo"
+	"github.com/Mhirii/TaskHub/backend/services"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -22,28 +23,27 @@ func main() {
 	}
 
 	// DB
-	_, err = infra.InitDB(*cfg)
+	db, err := infra.InitDB(*cfg)
 	if err != nil {
 		panic(err)
 	}
 
-	// Router
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
+	e := echo.New()
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+		AllowMethods: []string{echo.GET, echo.HEAD, echo.PUT, echo.PATCH, echo.POST, echo.DELETE},
+	}))
 
-	auth := handlers.NewAuthHandlers()
+	authRepo := repo.NewUsersRepo(db)
+	authSvc := services.NewAuthService(authRepo)
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("welcome"))
-	})
-	r.Route("/auth", func(r chi.Router) {
-		r.Post("/login", auth.Login)
-		r.Post("/register", auth.Register)
-		r.Post("/refresh", auth.Refresh)
-	})
-	fmt.Println("server listening on port ", cfg.Server.Port)
-	err = http.ListenAndServe(":"+cfg.Server.Port, r)
-	if err != nil {
-		panic(err)
-	}
+	handlers.NewAuthHandlers(authSvc).WriteGroup(e.Group("/auth"))
+	handlers.NewBoardHandlers().WriteGroup(e.Group("/board"))
+	handlers.NewProjectHandlers().WriteGroup(e.Group("/project"))
+	handlers.NewTaskHandlers().WriteGroup(e.Group("/task"))
+
+	e.Logger.Fatal(e.Start(":" + cfg.Server.Port))
 }

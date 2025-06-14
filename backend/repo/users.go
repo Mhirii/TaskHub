@@ -9,6 +9,8 @@ type UsersRepo interface {
 	CreateUser(username string, email string, password string) (*models.Users, error)
 	GetUserByUsername(username string) (*models.Users, error)
 	GetUserByEmail(email string) (*models.Users, error)
+	GetUserByID(userID uint) (*models.Users, error)
+	GetUserByUserOrEmail(userOrEmail string) (*models.Users, error)
 	UpdateUser(user *models.Users) (*models.Users, error)
 	DeleteUser(userID uint) (*models.Users, error)
 }
@@ -42,6 +44,26 @@ func (r *usersRepo) GetUserByUsername(username string) (*models.Users, error) {
 func (r *usersRepo) GetUserByEmail(email string) (*models.Users, error) {
 	var user models.Users
 	res := r.db.Where("email = ?", email).First(&user)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return &user, nil
+}
+
+func (r *usersRepo) GetUserByID(userID uint) (*models.Users, error) {
+	var user models.Users
+	res := r.db.Where("id = ?", userID).First(&user)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return &user, nil
+}
+
+func (r *usersRepo) GetUserByUserOrEmail(userOrEmail string) (*models.Users, error) {
+	var user models.Users
+	res := r.db.Where("username = ? OR email = ?", userOrEmail, userOrEmail).First(&user)
 	if res.Error != nil {
 		return nil, res.Error
 	}
