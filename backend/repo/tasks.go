@@ -1,6 +1,8 @@
 package repo
 
 import (
+	"fmt"
+
 	"github.com/Mhirii/TaskHub/backend/models"
 	"gorm.io/gorm"
 )
@@ -32,6 +34,9 @@ func (r *tasksRepo) GetTaskByID(taskID uint) (*models.Tasks, error) {
 	var task models.Tasks
 	res := r.db.Where("id = ?", taskID).First(&task)
 	if res.Error != nil {
+		if res.Error == gorm.ErrRecordNotFound {
+			return new(models.Tasks), nil
+		}
 		return nil, res.Error
 	}
 
@@ -42,6 +47,7 @@ func (r *tasksRepo) GetTasksByProjectID(projectID uint) ([]*models.Tasks, error)
 	var tasks []*models.Tasks
 	res := r.db.Where("project_id = ?", projectID).Find(&tasks)
 	if res.Error != nil {
+		fmt.Println(res.Error)
 		return nil, res.Error
 	}
 

@@ -137,7 +137,7 @@ func GenerateTokenPair(user *models.Users) (string, string, int, error) {
 	return access, refresh, int(exp.Unix()), nil
 }
 
-func GenerateToken(id string, username string, roles []string, exp int) (string, error) {
+func GenerateToken(id string, username string, userRoles []string, exp int) (string, error) {
 	builder := JWTBuilder()
 	cfg := config.GetConfig()
 	expiry := time.Now().Add(time.Duration(exp) * time.Second)
@@ -145,7 +145,7 @@ func GenerateToken(id string, username string, roles []string, exp int) (string,
 		Subject(string(id)).
 		Expiration(expiry).
 		Claim("username", username).
-		Claim("roles", roles).
+		Claim("roles", roles.RolesToString(userRoles)).
 		Build()
 	if err != nil {
 		return "", err

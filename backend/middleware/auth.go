@@ -1,7 +1,10 @@
 package middleware
 
 import (
+	"fmt"
+
 	"github.com/Mhirii/TaskHub/backend/pkg/config"
+	"github.com/Mhirii/TaskHub/backend/pkg/roles"
 	"github.com/labstack/echo/v4"
 
 	"github.com/lestrrat-go/jwx/v3/jwa"
@@ -13,6 +16,9 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		h := c.Request().Header.Get("Authorization")
 		if h == "" {
 			return c.JSON(401, "unauthorized")
+		}
+		if len(h) < 12 {
+			return c.JSON(401, "invalid token")
 		}
 		if h[0:7] != "Bearer " {
 			return c.JSON(401, "invalid token")
@@ -29,13 +35,18 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 			return c.JSON(401, "invalid token, missing subject")
 		}
 
-		var roles []string
-		err = t.Get("roles", roles)
+		var r interface{}
+		err = t.Get("roles", &r)
 		if err != nil {
+			fmt.Println(err)
 			return c.JSON(401, "invalid token, missing roles")
 		}
+
+		rstr := fmt.Sprintf("%v", r)
+		fmt.Println("roles: ", rstr)
+
 		c.Set("userID", userID)
-		c.Set("roles", roles)
+		c.Set("roles", roles.StringToRoles(rstr))
 		c.Set("token", h[7:])
 		return next(c)
 	}

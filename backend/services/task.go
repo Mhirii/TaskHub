@@ -3,15 +3,16 @@ package services
 import (
 	"github.com/Mhirii/TaskHub/backend/dto"
 	"github.com/Mhirii/TaskHub/backend/repo"
+	"github.com/labstack/echo/v4"
 )
 
 type TaskService interface {
-	CreateTask(userID uint, projectID uint, task dto.CreateTaskRequest) (*dto.CreateTaskResponse, error)
-	GetTaskByID(taskID uint) (*dto.GetTaskResponse, error)
-	GetTasks(userID uint, projectID uint) ([]*dto.GetTaskResponse, error)
-	UpdateTask(userID uint, task dto.UpdateTaskRequest) (*dto.UpdateTaskResponse, error)
-	CompleteTask(userID uint, taskID uint) (*dto.CompleteTaskResponse, error)
-	DeleteTask(userID uint, taskID uint) (*dto.DeleteTaskResponse, error)
+	CreateTask(c echo.Context, userID uint, projectID uint, task dto.CreateTaskRequest) (*dto.CreateTaskResponse, error)
+	GetTaskByID(c echo.Context, taskID uint) (*dto.GetTaskResponse, error)
+	GetTasks(c echo.Context, projectID uint) ([]*dto.GetTaskResponse, error)
+	UpdateTask(c echo.Context, userID uint, task dto.UpdateTaskRequest) (*dto.UpdateTaskResponse, error)
+	CompleteTask(c echo.Context, userID uint, taskID uint) (*dto.CompleteTaskResponse, error)
+	DeleteTask(c echo.Context, userID uint, taskID uint) (*dto.DeleteTaskResponse, error)
 }
 
 type taskService struct {
@@ -22,7 +23,7 @@ func NewTasksService(repo repo.TasksRepo) TaskService {
 	return &taskService{repo: repo}
 }
 
-func (s *taskService) CreateTask(userID uint, projectID uint, task dto.CreateTaskRequest) (*dto.CreateTaskResponse, error) {
+func (s *taskService) CreateTask(c echo.Context, userID uint, projectID uint, task dto.CreateTaskRequest) (*dto.CreateTaskResponse, error) {
 	t := task.ToModel()
 	t.CreatedBy = int(userID)
 	t.ProjectID = int(projectID)
@@ -34,7 +35,7 @@ func (s *taskService) CreateTask(userID uint, projectID uint, task dto.CreateTas
 	return &dto.CreateTaskResponse{ID: createdTask.ID}, nil
 }
 
-func (s *taskService) GetTaskByID(taskID uint) (*dto.GetTaskResponse, error) {
+func (s *taskService) GetTaskByID(c echo.Context, taskID uint) (*dto.GetTaskResponse, error) {
 	task, err := s.repo.GetTaskByID(taskID)
 	if err != nil {
 		return nil, err
@@ -44,7 +45,7 @@ func (s *taskService) GetTaskByID(taskID uint) (*dto.GetTaskResponse, error) {
 	return res, nil
 }
 
-func (s *taskService) GetTasks(userID uint, projectID uint) ([]*dto.GetTaskResponse, error) {
+func (s *taskService) GetTasks(c echo.Context, projectID uint) ([]*dto.GetTaskResponse, error) {
 	tasks, err := s.repo.GetTasksByProjectID(projectID)
 	if err != nil {
 		return nil, err
@@ -58,7 +59,7 @@ func (s *taskService) GetTasks(userID uint, projectID uint) ([]*dto.GetTaskRespo
 	return tasksResponse, nil
 }
 
-func (s *taskService) UpdateTask(userID uint, task dto.UpdateTaskRequest) (*dto.UpdateTaskResponse, error) {
+func (s *taskService) UpdateTask(c echo.Context, userID uint, task dto.UpdateTaskRequest) (*dto.UpdateTaskResponse, error) {
 	t := task.ToModel()
 	updatedTask, err := s.repo.UpdateTask(t)
 	if err != nil {
@@ -67,7 +68,7 @@ func (s *taskService) UpdateTask(userID uint, task dto.UpdateTaskRequest) (*dto.
 	return &dto.UpdateTaskResponse{ID: updatedTask.ID}, nil
 }
 
-func (s *taskService) CompleteTask(userID uint, taskID uint) (*dto.CompleteTaskResponse, error) {
+func (s *taskService) CompleteTask(c echo.Context, userID uint, taskID uint) (*dto.CompleteTaskResponse, error) {
 	task, err := s.repo.GetTaskByID(taskID)
 	if err != nil {
 		return nil, err
@@ -80,7 +81,7 @@ func (s *taskService) CompleteTask(userID uint, taskID uint) (*dto.CompleteTaskR
 	return &dto.CompleteTaskResponse{ID: updatedTask.ID}, nil
 }
 
-func (s *taskService) DeleteTask(userID uint, taskID uint) (*dto.DeleteTaskResponse, error) {
+func (s *taskService) DeleteTask(c echo.Context, userID uint, taskID uint) (*dto.DeleteTaskResponse, error) {
 	task, err := s.repo.GetTaskByID(taskID)
 	if err != nil {
 		return nil, err

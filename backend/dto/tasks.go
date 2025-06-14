@@ -116,30 +116,28 @@ type GetTaskResponse struct {
 }
 
 func (r *GetTaskResponse) FromModel(m *models.Tasks) *GetTaskResponse {
-	res := &GetTaskResponse{
-		ID:          m.ID,
-		Name:        m.Name,
-		Description: m.Description,
-		BoardID:     m.BoardID,
-		ProjectID:   m.ProjectID,
-		Order:       m.Order,
-		ParentID:    m.ParentID,
-		Status:      m.Status,
-		Tags:        m.Tags,
-		CreatedBy:   m.CreatedBy,
-		CreatedAt:   int(m.CreatedAt.Unix()),
-		UpdatedAt:   int(m.UpdatedAt.Unix()),
-	}
+	r.ID = m.ID
+	r.Name = m.Name
+	r.Description = m.Description
+	r.BoardID = m.BoardID
+	r.ProjectID = m.ProjectID
+	r.Order = m.Order
+	r.ParentID = m.ParentID
+	r.Status = m.Status
+	r.Tags = m.Tags
+	r.CreatedBy = m.CreatedBy
+	r.CreatedAt = int(m.CreatedAt.Unix())
+	r.UpdatedAt = int(m.UpdatedAt.Unix())
 	if m.Priority != nil {
-		res.Priority = *m.Priority
+		r.Priority = *m.Priority
 	}
 	if m.DueDate != nil {
-		res.DueDate = *m.DueDate
+		r.DueDate = *m.DueDate
 	}
 	if m.AssigneeID != nil {
-		res.AssigneeID = *m.AssigneeID
+		r.AssigneeID = *m.AssigneeID
 	}
-	return res
+	return r
 }
 
 type GetTasksResponse struct {
@@ -152,4 +150,9 @@ type CompleteTaskResponse struct {
 
 type DeleteTaskResponse struct {
 	ID uint `json:"id"`
+}
+
+type TaskFilters struct {
+	ProjectID *int `json:"project_id"`
+	Status    *int `json:"status"`
 }

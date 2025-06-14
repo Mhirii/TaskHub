@@ -27,6 +27,9 @@ func NewUsersRepo(db *gorm.DB) UsersRepo {
 
 func (r *usersRepo) CreateUser(username string, email string, password string, roles []string) (*models.Users, error) {
 	rolesStr := strings.Join(roles, "--")
+	if rolesStr == "" {
+		rolesStr = "user"
+	}
 	user := models.Users{Username: username, Email: email, Password: password, Roles: rolesStr}
 	res := r.db.Create(&user)
 	if res.Error != nil {

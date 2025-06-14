@@ -43,9 +43,12 @@ func main() {
 	tasksRepo := repo.NewTasksRepo(db)
 	tasksSvc := services.NewTasksService(tasksRepo)
 
+	projectsRepo := repo.NewProjectsRepo(db)
+	projectsSvc := services.NewProjectsService(projectsRepo)
+
 	handlers.NewAuthHandlers(authSvc).WriteGroup(e.Group("/auth"))
-	handlers.NewBoardHandlers().WriteGroup(e.Group("/board"))
-	handlers.NewProjectHandlers().WriteGroup(e.Group("/project"))
+	handlers.NewBoardHandlers().WriteGroup(e.Group("/boards"))
+	handlers.NewProjectHandlers(projectsSvc).WriteGroup(e.Group("/projects"))
 	handlers.NewTaskHandlers(tasksSvc).WriteGroup(e.Group("/tasks"))
 
 	e.Logger.Fatal(e.Start(":" + cfg.Server.Port))
