@@ -84,7 +84,19 @@ func (h *TaskHandlers) GetProjectTasks(c echo.Context) error {
 }
 
 func (h *TaskHandlers) UpdateTask(c echo.Context) error {
-	return nil
+	taskID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return err
+	}
+	var body dto.UpdateTaskRequest
+	if err := c.Bind(&body); err != nil {
+		return err
+	}
+	resp, err := h.svc.UpdateTask(c, uint(taskID), body)
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, resp)
 }
 
 func (h *TaskHandlers) DeleteTask(c echo.Context) error {

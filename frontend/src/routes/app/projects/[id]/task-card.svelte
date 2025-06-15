@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Button } from "$lib/components/ui/button";
+	import * as Dialog from "$lib/components/ui/dialog/index.js";
 	import {
 		Card,
 		CardContent,
@@ -21,8 +22,22 @@
 		TooltipTrigger,
 	} from "$lib/components/ui/tooltip";
 	import { cn } from "$lib/utils";
+	import TaskUpdateForm from "./task-update-form.svelte";
+	import type { TaskUpdateSchema } from "./schema";
+	import { type Infer, type SuperValidated } from "sveltekit-superforms";
+	import ScrollArea from "$lib/components/ui/scroll-area/scroll-area.svelte";
 
-	export let task: Task;
+	let {
+		task,
+		projectId,
+		boardId,
+		data,
+	}: {
+		task: Task;
+		projectId: number;
+		boardId: number;
+		data: { taskUpdateForm: SuperValidated<Infer<TaskUpdateSchema>> };
+	} = $props();
 </script>
 
 <Card class="mb-2">
@@ -33,16 +48,18 @@
 			</CardTitle>
 		</div>
 		<div class="flex items-center gap-2 w-full justify-end">
-			<Popover>
-				<PopoverTrigger>
-					<Button variant="outline" size="sm" class="h-8 w-8">
-						<Pen />
-					</Button>
-				</PopoverTrigger>
-				<PopoverContent>
-					<p>Edit task</p>
-				</PopoverContent>
-			</Popover>
+			<ScrollArea>
+				<Dialog.Root>
+					<Dialog.Trigger>
+						<Button variant="outline" size="sm" class="h-8 w-8">
+							<Pen />
+						</Button>
+					</Dialog.Trigger>
+					<Dialog.Content>
+						<TaskUpdateForm {task} {data} />
+					</Dialog.Content>
+				</Dialog.Root>
+			</ScrollArea>
 		</div>
 	</CardHeader>
 	<CardFooter

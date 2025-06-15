@@ -55,7 +55,7 @@ func (r *tasksRepo) GetTasksByProjectID(projectID uint) ([]*models.Tasks, error)
 }
 
 func (r *tasksRepo) UpdateTask(task *models.Tasks) (*models.Tasks, error) {
-	res := r.db.Save(task)
+	res := r.db.UpdateColumns(task)
 	if res.Error != nil {
 		return nil, res.Error
 	}
