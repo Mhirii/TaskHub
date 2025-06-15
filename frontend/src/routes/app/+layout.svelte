@@ -4,7 +4,17 @@
 	import { Separator } from "$lib/components/ui/separator/index.js";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { page } from "$app/state";
-	let { children } = $props();
+	import { type PageData } from "./$types";
+	import type { Project } from "$lib/types";
+	import type { Snippet } from "svelte";
+
+	let {
+		children,
+		data,
+	}: {
+		children: Snippet<[]>;
+		data: PageData & { projects: Promise<Project[]> };
+	} = $props();
 
 	const buildBreads = () => {
 		const paths = (page.url.pathname || "/").split("/");
@@ -21,7 +31,11 @@
 </script>
 
 <Sidebar.Provider>
-	<AppSidebar />
+	{#await data.projects}
+		<span></span>
+	{:then projects}
+		<AppSidebar {projects} />
+	{/await}
 	<Sidebar.Inset>
 		<header
 			class="group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear"

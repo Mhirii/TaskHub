@@ -34,3 +34,20 @@ export type Task = {
 	created_at: number;
 	updated_at: number;
 }
+
+export type GetUserResponse = {
+	id: number;
+	username: string;
+	email: string;
+	roles?: string[];
+	projects?: {
+		project_id: number;
+		name: string;
+		role: string;
+		tasks_assigned: number;
+	}[];
+	created_at: string;
+	updated_at: string;
+}
+
+export type GetUsersResponse = GetUserResponse[];

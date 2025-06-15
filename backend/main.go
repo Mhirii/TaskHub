@@ -46,10 +46,14 @@ func main() {
 	projectsRepo := repo.NewProjectsRepo(db)
 	projectsSvc := services.NewProjectsService(projectsRepo)
 
+	usersRepo := repo.NewUsersRepo(db)
+	usersSvc := services.NewUsersService(usersRepo)
+
 	handlers.NewAuthHandlers(authSvc).WriteGroup(e.Group("/auth"))
 	handlers.NewBoardHandlers().WriteGroup(e.Group("/boards"))
 	handlers.NewProjectHandlers(projectsSvc).WriteGroup(e.Group("/projects"))
 	handlers.NewTaskHandlers(tasksSvc).WriteGroup(e.Group("/tasks"))
+	handlers.NewUsersHandlers(usersSvc).WriteGroup(e.Group("/users"))
 
 	e.Logger.Fatal(e.Start(":" + cfg.Server.Port))
 }

@@ -10,8 +10,7 @@
 	import Settings2Icon from "@lucide/svelte/icons/settings-2";
 	import SquareTerminalIcon from "@lucide/svelte/icons/square-terminal";
 
-	// This is sample data.
-	const data = {
+	const sampleData = {
 		user: {
 			name: "shadcn",
 			email: "m@example.com",
@@ -148,24 +147,26 @@
 	import TeamSwitcher from "./team-switcher.svelte";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import type { ComponentProps } from "svelte";
+	import type { Project } from "$lib/types";
 
 	let {
+		projects,
 		ref = $bindable(null),
 		collapsible = "icon",
 		...restProps
-	}: ComponentProps<typeof Sidebar.Root> = $props();
+	}: ComponentProps<typeof Sidebar.Root> & { projects: Project[] } = $props();
 </script>
 
 <Sidebar.Root {collapsible} {...restProps}>
 	<Sidebar.Header>
-		<TeamSwitcher teams={data.teams} />
+		<TeamSwitcher teams={sampleData.teams} />
 	</Sidebar.Header>
 	<Sidebar.Content>
-		<NavMain items={data.navMain} />
-		<NavProjects projects={data.projects} />
+		<NavMain {projects} />
+		<NavProjects projects={sampleData.projects} />
 	</Sidebar.Content>
 	<Sidebar.Footer>
-		<NavUser user={data.user} />
+		<NavUser user={sampleData.user} />
 	</Sidebar.Footer>
 	<Sidebar.Rail />
 </Sidebar.Root>

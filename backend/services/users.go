@@ -7,6 +7,7 @@ import (
 	"github.com/Mhirii/TaskHub/backend/pkg/roles"
 	"github.com/Mhirii/TaskHub/backend/repo"
 	"github.com/labstack/echo/v4"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UsersService interface {
@@ -28,7 +29,11 @@ func NewUsersService(repo repo.UsersRepo) UsersService {
 
 func (s *usersService) CreateUser(ctx echo.Context, user dto.CreateUserRequest) (*dto.CreateUserResponse, error) {
 	u := user.ToModel()
-	createdUser, err := s.repo.CreateUser(u.Username, u.Email, u.Password, roles.StringToRoles(u.Roles))
+	hashed, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+	createdUser, err := s.repo.CreateUser(u.Username, u.Email, string(hashed), roles.StringToRoles(u.Roles))
 	if err != nil {
 		return nil, err
 	}
@@ -70,8 +75,8 @@ func (s *usersService) GetUsers(ctx echo.Context) ([]*dto.GetUserResponse, error
 	var usersResponse []*dto.GetUserResponse
 	for _, user := range users {
 		res := &dto.GetUserResponse{}
-		res.FromModel(user)
-		usersResponse = append(usersResponse, res)
+		u := res.FromModel(user)
+		usersResponse = append(usersResponse, u)
 	}
 	return usersResponse, nil
 }

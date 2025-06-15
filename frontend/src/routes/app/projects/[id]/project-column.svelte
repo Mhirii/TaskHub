@@ -11,9 +11,9 @@
 	import TaskCard from "./task-card.svelte";
 	import * as Dialog from "$lib/components/ui/dialog/index.js";
 	import TaskForm from "./task-form.svelte";
-	import { page } from "$app/state";
 	import type { Infer, SuperValidated } from "sveltekit-superforms";
 	import type { TaskSchema, TaskUpdateSchema } from "./schema";
+	import AddTaskButton from "./add-task-button.svelte";
 
 	let {
 		tasks,
@@ -28,9 +28,23 @@
 		projectId: number;
 	} = $props();
 
-	const planned = tasks?.filter((task) => task.board_id === 0) || [];
-	const inProgress = tasks?.filter((task) => task.board_id === 1) || [];
-	const done = tasks?.filter((task) => task.board_id === 2) || [];
+	const mapTasks = (tasks: Task[], boardId: number) => {
+		if (!tasks || tasks.length === 0) return [];
+		let highestOrder = 0;
+		const filtered = tasks.filter((task) => {
+			if (task.board_id === boardId) {
+				if (task.order > highestOrder) {
+					highestOrder = task.order;
+				}
+				return true;
+			} else return false;
+		});
+		return filtered.sort((a, b) => b.order - a.order);
+	};
+
+	const planned = mapTasks(tasks, 0);
+	const inProgress = mapTasks(tasks, 1);
+	const done = mapTasks(tasks, 2);
 </script>
 
 <div class="grid gap-4 lg:grid-cols-3">
@@ -64,8 +78,9 @@
 		</CardContent>
 	</Card>
 	<Card>
-		<CardHeader>
+		<CardHeader class="flex flex-row items-center justify-between">
 			<CardTitle class="text-lg">In Progress</CardTitle>
+			<AddTaskButton {projectId} {data} boardId={1} />
 		</CardHeader>
 		<CardContent>
 			{#if inProgress.length === 0}
@@ -78,8 +93,9 @@
 		</CardContent>
 	</Card>
 	<Card>
-		<CardHeader>
+		<CardHeader class="flex flex-row items-center justify-between">
 			<CardTitle class="text-lg">Done</CardTitle>
+			<AddTaskButton {projectId} {data} boardId={2} />
 		</CardHeader>
 		<CardContent>
 			{#if done.length === 0}

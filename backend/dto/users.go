@@ -54,10 +54,21 @@ type UpdateUserResponse struct {
 	ID uint `json:"id"`
 }
 
+type UserProject struct {
+	ProjectID     uint   `json:"project_id"`
+	Name          string `json:"name"`
+	Role          string `json:"role"`
+	TasksAssigned int    `json:"tasks_assigned"`
+}
+
 type GetUserResponse struct {
-	ID        uint   `json:"id"`
-	Username  string `json:"username"`
-	Email     string `json:"email"`
+	ID       uint   `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+
+	Roles    []string      `json:"roles"`
+	Projects []UserProject `json:"projects"`
+
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 }
@@ -69,7 +80,10 @@ func (r *GetUserResponse) FromModel(m *models.Users) *GetUserResponse {
 		Email:     m.Email,
 		CreatedAt: m.CreatedAt.String(),
 		UpdatedAt: m.UpdatedAt.String(),
+		Projects:  []UserProject{},
+		Roles:     roles.StringToRoles(m.Roles),
 	}
+	r = res
 	return res
 }
 

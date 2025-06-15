@@ -1,24 +1,41 @@
 <script lang="ts">
 	import * as Collapsible from "$lib/components/ui/collapsible/index.js";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
+	import type { Project } from "$lib/types";
+	import { FrameIcon, UsersIcon } from "@lucide/svelte";
 	import ChevronRightIcon from "@lucide/svelte/icons/chevron-right";
 
-	let {
-		items,
-	}: {
-		items: {
+	let { projects }: { projects: Project[] } = $props();
+
+	type MenuItem = {
+		title: string;
+		url: string;
+		icon?: any;
+		isActive: boolean;
+		items?: Array<{
 			title: string;
 			url: string;
-			// this should be `Component` after @lucide/svelte updates types
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			icon?: any;
-			isActive?: boolean;
-			items?: {
-				title: string;
-				url: string;
-			}[];
-		}[];
-	} = $props();
+		}>;
+	};
+
+	const items: MenuItem[] = [
+		{
+			title: "Projects",
+			url: "/app/projects",
+			icon: FrameIcon,
+			isActive: false,
+			items: projects.map((p) => ({
+				title: p.name,
+				url: `/app/projects/${p.id}`,
+			})),
+		},
+		{
+			title: "Users",
+			url: "/app/users",
+			icon: UsersIcon,
+			isActive: false,
+		},
+	];
 </script>
 
 <Sidebar.Group>
@@ -34,7 +51,7 @@
 									{#if item.icon}
 										<item.icon />
 									{/if}
-									<span>{item.title}</span>
+									<a href={item.url}><span>{item.title}</span></a>
 									<ChevronRightIcon
 										class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
 									/>
