@@ -1,6 +1,8 @@
 package dto
 
 import (
+	"strings"
+
 	"github.com/Mhirii/TaskHub/backend/models"
 )
 
@@ -29,7 +31,7 @@ func (r *CreateTaskRequest) ToModel() *models.Tasks {
 		Priority:    r.Priority,
 		DueDate:     r.DueDate,
 		AssigneeID:  r.AssigneeID,
-		Tags:        r.Tags,
+		Tags:        strings.Join(r.Tags, "--"),
 	}
 	if r.ParentID != nil {
 		task.ParentID = *r.ParentID
@@ -67,7 +69,7 @@ func (r *UpdateTaskRequest) ToModel() *models.Tasks {
 		task.AssigneeID = r.AssigneeID
 	}
 	if r.Tags != nil {
-		task.Tags = r.Tags
+		task.Tags = strings.Join(r.Tags, "--")
 	}
 	if r.Name != nil {
 		task.Name = *r.Name
@@ -124,7 +126,7 @@ func (r *GetTaskResponse) FromModel(m *models.Tasks) *GetTaskResponse {
 	r.Order = m.Order
 	r.ParentID = m.ParentID
 	r.Status = m.Status
-	r.Tags = m.Tags
+	r.Tags = strings.Split(m.Tags, "--")
 	r.CreatedBy = m.CreatedBy
 	r.CreatedAt = int(m.CreatedAt.Unix())
 	r.UpdatedAt = int(m.UpdatedAt.Unix())
