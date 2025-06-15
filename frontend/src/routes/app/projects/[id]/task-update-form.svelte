@@ -32,29 +32,26 @@
 	export let task: Task;
 	let buttonDisabled = true;
 	let changeCouter = 0; // each time one of the form fields loads, it counts as a change
+	console.log(task);
 
 	const form = superForm(data.taskUpdateForm, {
 		validators: zodClient(taskSchema),
+		dataType: "json",
 		onResult: async ({ result }) => {
 			console.log(result);
 		},
 		onChange: () => {
 			changeCouter++;
-			console.log("onChange");
 			if (changeCouter > 5) {
 				buttonDisabled = false;
 			}
 		},
-		onUpdated: () => {
-			console.log("onUpdated");
-			buttonDisabled = false;
-		},
-		dataType: "json",
 	});
 
-	const { form: formData, enhance, tainted } = form;
+	const { form: formData, enhance } = form;
 
 	// Initialize form data with task values
+	$formData.id = task.id;
 	$formData.name = task.name;
 	$formData.description = task.description;
 	$formData.project_id = task.project_id;
@@ -87,7 +84,13 @@
 <Card class="w-full max-w-md lg:max-w-2xl shadow-md ">
 	<ScrollArea class="h-full max-h-[70vh] w-full rounded-md ">
 		<CardContent class="p-6">
-			<form method="POST" use:enhance class="space-y-4">
+			<form
+				method="POST"
+				use:enhance
+				class="space-y-4"
+				on:submit|preventDefault
+			>
+				<input type="hidden" name="formType" value="updateTask" />
 				<div class="grid gap-4">
 					<Form.Field {form} name="name">
 						<Form.Control>
@@ -247,7 +250,14 @@
 					</div>
 
 					<div class="flex justify-end gap-2 mt-6">
-						<Form.Button disabled={buttonDisabled}>Save</Form.Button>
+						<Form.Button
+							disabled={buttonDisabled}
+							onclick={() => {
+								console.log($formData);
+							}}
+						>
+							Save
+						</Form.Button>
 					</div>
 				</div>
 			</form>

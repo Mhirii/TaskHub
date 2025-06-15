@@ -2,6 +2,7 @@ package repo
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/Mhirii/TaskHub/backend/models"
 	"gorm.io/gorm"
@@ -11,7 +12,7 @@ type TasksRepo interface {
 	CreateTask(task models.Tasks) (*models.Tasks, error)
 	GetTaskByID(taskID uint) (*models.Tasks, error)
 	GetTasksByProjectID(projectID uint) ([]*models.Tasks, error)
-	UpdateTask(task *models.Tasks) (*models.Tasks, error)
+	UpdateTask(taskID uint, task *models.Tasks) (*models.Tasks, error)
 	DeleteTask(task models.Tasks) (*models.Tasks, error)
 }
 type tasksRepo struct {
@@ -54,8 +55,10 @@ func (r *tasksRepo) GetTasksByProjectID(projectID uint) ([]*models.Tasks, error)
 	return tasks, nil
 }
 
-func (r *tasksRepo) UpdateTask(task *models.Tasks) (*models.Tasks, error) {
-	res := r.db.UpdateColumns(task)
+func (r *tasksRepo) UpdateTask(id uint, task *models.Tasks) (*models.Tasks, error) {
+	task.UpdatedAt = time.Now()
+	fmt.Println(task.Description)
+	res := r.db.Model(&task).Where("id = ?", id).Updates(task)
 	if res.Error != nil {
 		return nil, res.Error
 	}

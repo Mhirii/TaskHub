@@ -3,6 +3,7 @@ package services
 import (
 	"github.com/Mhirii/TaskHub/backend/dto"
 	"github.com/Mhirii/TaskHub/backend/repo"
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 )
 
@@ -10,7 +11,7 @@ type TaskService interface {
 	CreateTask(c echo.Context, userID uint, projectID uint, task dto.CreateTaskRequest) (*dto.CreateTaskResponse, error)
 	GetTaskByID(c echo.Context, taskID uint) (*dto.GetTaskResponse, error)
 	GetTasks(c echo.Context, projectID uint) ([]*dto.GetTaskResponse, error)
-	UpdateTask(c echo.Context, userID uint, task dto.UpdateTaskRequest) (*dto.UpdateTaskResponse, error)
+	UpdateTask(c echo.Context, userID uint, taskID uint, task dto.UpdateTaskRequest) (*dto.UpdateTaskResponse, error)
 	CompleteTask(c echo.Context, userID uint, taskID uint) (*dto.CompleteTaskResponse, error)
 	DeleteTask(c echo.Context, userID uint, taskID uint) (*dto.DeleteTaskResponse, error)
 }
@@ -59,13 +60,18 @@ func (s *taskService) GetTasks(c echo.Context, projectID uint) ([]*dto.GetTaskRe
 	return tasksResponse, nil
 }
 
-func (s *taskService) UpdateTask(c echo.Context, userID uint, task dto.UpdateTaskRequest) (*dto.UpdateTaskResponse, error) {
+func (s *taskService) UpdateTask(c echo.Context, userID uint, taskID uint, task dto.UpdateTaskRequest) (*dto.UpdateTaskResponse, error) {
 	t := task.ToModel()
-	updatedTask, err := s.repo.UpdateTask(t)
+	updatedTask, err := s.repo.UpdateTask(taskID, t)
 	if err != nil {
 		return nil, err
 	}
-	return &dto.UpdateTaskResponse{ID: updatedTask.ID}, nil
+	var resp dto.UpdateTaskResponse
+	err = copier.Copy(&resp, updatedTask)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
 }
 
 func (s *taskService) CompleteTask(c echo.Context, userID uint, taskID uint) (*dto.CompleteTaskResponse, error) {
@@ -74,7 +80,7 @@ func (s *taskService) CompleteTask(c echo.Context, userID uint, taskID uint) (*d
 		return nil, err
 	}
 	task.Status = 1
-	updatedTask, err := s.repo.UpdateTask(task)
+	updatedTask, err := s.repo.UpdateTask(taskID, task)
 	if err != nil {
 		return nil, err
 	}

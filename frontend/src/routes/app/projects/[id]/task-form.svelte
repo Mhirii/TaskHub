@@ -47,7 +47,7 @@
 
 	const { form: formData, enhance } = form;
 	$formData.project_id = projectId;
-	$formData.board_id = 99;
+	$formData.board_id = board;
 </script>
 
 <form class="p-6 md:p-8" method="POST" use:form.enhance>
@@ -57,6 +57,7 @@
 			<p class="text-muted-foreground text-balance">Create a new task</p>
 		</div>
 	</div>
+	<input type="hidden" name="formType" value="createTask" />
 	<Form.Field {form} name="name" class="grid gap-3">
 		<Form.Control>
 			{#snippet children({ props })}

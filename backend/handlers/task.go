@@ -88,11 +88,19 @@ func (h *TaskHandlers) UpdateTask(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+
+	userIDstr := c.Get("userID").(string)
+	userID, err := strconv.Atoi(userIDstr)
+	if err != nil {
+		return err
+	}
+
 	var body dto.UpdateTaskRequest
 	if err := c.Bind(&body); err != nil {
 		return err
 	}
-	resp, err := h.svc.UpdateTask(c, uint(taskID), body)
+
+	resp, err := h.svc.UpdateTask(c, uint(userID), uint(taskID), body)
 	if err != nil {
 		return err
 	}

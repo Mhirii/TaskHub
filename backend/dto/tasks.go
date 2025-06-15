@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/Mhirii/TaskHub/backend/models"
+	"github.com/jinzhu/copier"
 )
 
 type CreateTaskRequest struct {
@@ -44,6 +45,7 @@ type CreateTaskResponse struct {
 }
 
 type UpdateTaskRequest struct {
+	ID          uint     `json:"id"`
 	Name        *string  `json:"name"`
 	Description *string  `json:"description"`
 	BoardID     *int     `json:"board_id"`
@@ -58,45 +60,30 @@ type UpdateTaskRequest struct {
 }
 
 func (r *UpdateTaskRequest) ToModel() *models.Tasks {
-	task := &models.Tasks{}
-	if r.Priority != nil {
-		task.Priority = r.Priority
+	var task models.Tasks
+	err := copier.Copy(&task, r)
+	if err != nil {
+		return nil
 	}
-	if r.DueDate != nil {
-		task.DueDate = r.DueDate
-	}
-	if r.AssigneeID != nil {
-		task.AssigneeID = r.AssigneeID
-	}
-	if r.Tags != nil {
-		task.Tags = strings.Join(r.Tags, "--")
-	}
-	if r.Name != nil {
-		task.Name = *r.Name
-	}
-	if r.Description != nil {
-		task.Description = *r.Description
-	}
-	if r.BoardID != nil {
-		task.BoardID = *r.BoardID
-	}
-	if r.ProjectID != nil {
-		task.ProjectID = *r.ProjectID
-	}
-	if r.Order != nil {
-		task.Order = *r.Order
-	}
-	if r.Status != nil {
-		task.Status = *r.Status
-	}
-	if r.ParentID != nil {
-		task.ParentID = *r.ParentID
-	}
-	return task
+	return &task
 }
 
 type UpdateTaskResponse struct {
-	ID uint `json:"id"`
+	ID          uint     `json:"id"`
+	Name        string   `json:"name,omitempty"`
+	Description string   `json:"description,omitempty"`
+	BoardID     int      `json:"board_id,omitempty"`
+	ProjectID   int      `json:"project_id,omitempty"`
+	Order       int      `json:"order,omitempty"`
+	ParentID    int      `json:"parent_id,omitempty"`
+	Status      int      `json:"status,omitempty"`
+	Priority    int      `json:"priority,omitempty"`
+	DueDate     int      `json:"due_date,omitempty"`
+	AssigneeID  int      `json:"assignee,omitempty"`
+	Tags        []string `json:"tags,omitempty"`
+	CreatedBy   int      `json:"created_by,omitempty"`
+	CreatedAt   int      `json:"created_at,omitempty"`
+	UpdatedAt   int      `json:"updated_at,omitempty"`
 }
 
 type GetTaskResponse struct {

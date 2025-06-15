@@ -33,7 +33,7 @@
 	const done = tasks?.filter((task) => task.board_id === 2) || [];
 </script>
 
-<div class="grid gap-4 md:grid-cols-3">
+<div class="grid gap-4 lg:grid-cols-3">
 	<Card>
 		<CardHeader class="flex flex-row items-center justify-between">
 			<CardTitle class="text-lg">Planned</CardTitle>
