@@ -56,7 +56,15 @@
 						</Button>
 					</Dialog.Trigger>
 					<Dialog.Content>
-						<TaskUpdateForm {task} {data} />
+						<div class="w-full h-full flex flex-col gap-4">
+							<div class="flex flex-col gap-2">
+								<h1 class="text-xl font-semibold">Task Details</h1>
+								<p class="text-sm text-muted-foreground">
+									View and edit task details
+								</p>
+							</div>
+							<TaskUpdateForm {task} {data} />
+						</div>
 					</Dialog.Content>
 				</Dialog.Root>
 			</ScrollArea>
