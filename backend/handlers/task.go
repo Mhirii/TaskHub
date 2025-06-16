@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -99,6 +101,12 @@ func (h *TaskHandlers) UpdateTask(c echo.Context) error {
 	if err := c.Bind(&body); err != nil {
 		return err
 	}
+	bodyStr, err := json.Marshal(body)
+	fmt.Println(err)
+	if err != nil {
+		return err
+	}
+	fmt.Println(bodyStr)
 
 	resp, err := h.svc.UpdateTask(c, uint(userID), uint(taskID), body)
 	if err != nil {

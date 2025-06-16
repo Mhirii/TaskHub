@@ -1,5 +1,8 @@
 import { USERS_API_URL } from "$env/static/private";
 import type { GetUsersResponse } from "$lib/types";
+import { superValidate } from "sveltekit-superforms";
+import { userSchema } from "./schema";
+import { zod } from "sveltekit-superforms/adapters";
 
 export async function load({ cookies }) {
 	const access_token = cookies.get('access_token');
@@ -15,8 +18,10 @@ export async function load({ cookies }) {
 		console.log(result)
 		return result
 	});
+	const userForm = await superValidate(zod(userSchema))
 	const users: GetUsersResponse = await getUsers()
 	return {
 		users,
+		userForm,
 	};
 }

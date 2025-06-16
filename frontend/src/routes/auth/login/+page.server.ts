@@ -28,13 +28,16 @@ export const load: PageServerLoad = async () => {
 };
 
 export const actions: Actions = {
-	default: async (event) => {
-		const form = await superValidate(event, zod(formSchema));
+	default: async ({ cookies, request }) => {
+		const formData = await request.formData();
+		console.log(formData)
+		const form = await superValidate(formData, zod(formSchema));
 		if (!form.valid) {
 			return fail(400, {
 				form,
 			});
 		}
+		console.log(form.data)
 		const { usernameOrEmail, password } = form.data;
 		const body = JSON.stringify({
 			username: usernameOrEmail,
@@ -52,7 +55,7 @@ export const actions: Actions = {
 			return fail(res.status, { form });
 		}
 		const resp: LoginResponseSchema = await res.json();
-		event.cookies.set('access_token', resp.access_token, { path: '/' });
+		cookies.set('access_token', resp.access_token, { path: '/' });
 		return {
 			form,
 			...resp,

@@ -13,12 +13,14 @@ import (
 )
 
 type ProjectHandlers struct {
-	svc services.ProjectsService
+	svc   services.ProjectsService
+	upSvc services.UserProjectsService
 }
 
-func NewProjectHandlers(svc services.ProjectsService) *ProjectHandlers {
+func NewProjectHandlers(svc services.ProjectsService, upSvc services.UserProjectsService) *ProjectHandlers {
 	return &ProjectHandlers{
-		svc: svc,
+		svc:   svc,
+		upSvc: upSvc,
 	}
 }
 
@@ -31,6 +33,19 @@ func (h *ProjectHandlers) WriteGroup(g *echo.Group) {
 	g.DELETE("/:id", h.DeleteProject)
 	g.POST("/:id/user", h.AddUser)
 	g.DELETE("/:id/user", h.RemoveUser)
+	g.GET("/:id/members", h.GetMembers)
+}
+
+func (h *ProjectHandlers) GetMembers(c echo.Context) error {
+	projectID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return err
+	}
+	resp, err := h.upSvc.GetUserProjectsByProjectID(uint(projectID))
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, resp)
 }
 
 func (h *ProjectHandlers) CreateProject(c echo.Context) error {

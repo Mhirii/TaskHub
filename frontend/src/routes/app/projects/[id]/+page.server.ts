@@ -23,7 +23,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, params }) => {
 	}).then(res => {
 		if (!res.ok) fail(res.status, { message: `Failed to fetch tasks for project ${projectID}: ${res.statusText}` });
 		return res.json();
-	});
+	})
 	const project: Promise<Project> = fetch(`${PROJECTS_API_URL}/${projectID}`, {
 		headers,
 	}).then(async (res) => {
@@ -93,7 +93,7 @@ export const actions: Actions = {
 						form,
 					});
 				}
-				const { id, name, description, due_date, priority, assignee_id, board_id, project_id } = form.data;
+				const { id, name, description, due_date, priority, assignee_id, board_id, project_id, status } = form.data;
 				const body = JSON.stringify({
 					id,
 					name,
@@ -103,6 +103,7 @@ export const actions: Actions = {
 					assignee_id,
 					board_id,
 					project_id,
+					status,
 				})
 				console.log("using ", body)
 				const res = await fetch(`${TASKS_API_URL}/${id}`,

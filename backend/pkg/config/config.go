@@ -5,6 +5,7 @@ type Config struct {
 	DB     DBConfig     `yaml:"db"`
 	Auth   AuthConfig   `yaml:"auth"`
 	RBAC   RBACConfig   `yaml:"rbac"`
+	Seed   SeedConfig   `yaml:"seed"`
 }
 
 type ServerConfig struct {
@@ -30,4 +31,12 @@ type RBACConfig struct {
 	ModelFile  string   `yaml:"model_file"`
 	PolicyFile string   `yaml:"policy_file"`
 	DB         DBConfig `yaml:"db"`
+}
+
+type SeedConfig struct {
+	Admin struct {
+		Username string `yaml:"username"`
+		Password string `yaml:"password"`
+		Email    string `yaml:"email"`
+	} `yaml:"admin"`
 }

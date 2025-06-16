@@ -24,3 +24,9 @@ rbac:
     password: pg
     name: taskhub
     ssl_mode: disable
+
+seed:
+  admin:
+    username: admin
+    password: admin123
+    email: admin@gmail.com

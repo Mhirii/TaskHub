@@ -11,6 +11,8 @@
 		CardTitle,
 		CardDescription,
 	} from "$lib/components/ui/card";
+	import { Plus } from "@lucide/svelte";
+	import Button from "$lib/components/ui/button/button.svelte";
 
 	let params = page.params;
 	const id = params.id;
@@ -39,19 +41,21 @@
 			<ProjectColumnsSkeleton />
 		{:then p}
 			<Card class="mb-8">
-				<CardHeader>
-					<CardTitle class="text-3xl font-bold">{p.name}</CardTitle>
-					<CardDescription>{p.description}</CardDescription>
+				<CardHeader class="flex flex-row items-center justify-between">
+					<div>
+						<CardTitle class="text-3xl font-bold">{p.name}</CardTitle>
+						<CardDescription>{p.description}</CardDescription>
+					</div>
+					<Button>
+						<Plus />
+						Add Member
+					</Button>
 				</CardHeader>
 			</Card>
 			{#await data.tasks}
 				<div></div>
 			{:then t}
-				{#if t.length === 0}
-					<NoTasksFound />
-				{:else}
-					<ProjectColumns tasks={t} {projectId} {data} />
-				{/if}
+				<ProjectColumns tasks={t} {projectId} {data} />
 			{/await}
 		{/await}
 	</div>

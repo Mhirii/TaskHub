@@ -12,6 +12,7 @@
 		CardDescription,
 	} from "$lib/components/ui/card";
 	import type { Project } from "$lib/types";
+	import { Plus } from "@lucide/svelte";
 
 	let isLoading = true;
 	let projects: Project[] = [];
@@ -30,11 +31,20 @@
 <div class="flex justify-center">
 	<div class="w-full xl:max-w-[1200px] py-10">
 		<Card class="mb-8">
-			<CardHeader>
-				<CardTitle class="text-3xl font-bold">Projects</CardTitle>
-				<CardDescription
-					>Manage your projects and track progress</CardDescription
+			<CardHeader class="flex flex-row items-center justify-between">
+				<div>
+					<CardTitle class="text-3xl font-bold">Projects</CardTitle>
+					<CardDescription>
+						Manage your projects and track progress
+					</CardDescription>
+				</div>
+				<a
+					href="/app/projects/new"
+					class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
 				>
+					<Plus />
+					New Project
+				</a>
 			</CardHeader>
 		</Card>
 		{#if isLoading}

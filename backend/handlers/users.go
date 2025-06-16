@@ -12,12 +12,14 @@ import (
 )
 
 type UsersHandlers struct {
-	svc services.UsersService
+	svc   services.UsersService
+	upSvc services.UserProjectsService
 }
 
-func NewUsersHandlers(svc services.UsersService) *UsersHandlers {
+func NewUsersHandlers(svc services.UsersService, upSvc services.UserProjectsService) *UsersHandlers {
 	return &UsersHandlers{
-		svc: svc,
+		svc:   svc,
+		upSvc: upSvc,
 	}
 }
 
@@ -41,6 +43,21 @@ func (h *UsersHandlers) WriteGroup(g *echo.Group) {
 	g.GET("/:id", h.GetUser)
 	g.PATCH("/:id", h.UpdateUser)
 	g.DELETE("/:id", h.DeleteUser)
+	g.GET("/:id/projects", h.GetProjects)
+}
+
+func (h *UsersHandlers) GetProjects(c echo.Context) error {
+	userIDStr := c.Param("id")
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		return err
+	}
+
+	res, err := h.upSvc.GetUserProjectsByUserID(uint(userID))
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, res)
 }
 
 func (h *UsersHandlers) CreateUser(c echo.Context) error {

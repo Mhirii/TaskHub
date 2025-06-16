@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"github.com/Mhirii/TaskHub/backend/dto"
 	"github.com/Mhirii/TaskHub/backend/repo"
 	"github.com/jinzhu/copier"
@@ -54,13 +56,19 @@ func (s *taskService) GetTasks(c echo.Context, projectID uint) ([]*dto.GetTaskRe
 	var tasksResponse []*dto.GetTaskResponse
 	for _, task := range tasks {
 		res := &dto.GetTaskResponse{}
-		res.FromModel(task)
-		tasksResponse = append(tasksResponse, res)
+		tasksResponse = append(tasksResponse, res.FromModel(task))
 	}
 	return tasksResponse, nil
 }
 
 func (s *taskService) UpdateTask(c echo.Context, userID uint, taskID uint, task dto.UpdateTaskRequest) (*dto.UpdateTaskResponse, error) {
+	if task.Status != nil {
+		fmt.Println("status")
+		fmt.Println(*task.Status)
+	} else {
+		fmt.Println("nil")
+	}
+
 	t := task.ToModel()
 	updatedTask, err := s.repo.UpdateTask(taskID, t)
 	if err != nil {

@@ -1,11 +1,12 @@
 module github.com/Mhirii/TaskHub/backend
 
-go 1.24.3
+go 1.24.2
 
 require (
 	github.com/casbin/casbin-pg-adapter v1.4.0
 	github.com/casbin/casbin/v2 v2.107.0
 	github.com/jesseduffield/yaml v2.1.0+incompatible
+	github.com/jinzhu/copier v0.4.0
 	github.com/labstack/echo/v4 v4.13.4
 	github.com/lestrrat-go/jwx/v3 v3.0.6
 	golang.org/x/crypto v0.39.0
@@ -24,7 +25,6 @@ require (
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/pgx/v5 v5.7.4 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
-	github.com/jinzhu/copier v0.4.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect

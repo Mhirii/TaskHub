@@ -32,6 +32,7 @@
 		if (!tasks || tasks.length === 0) return [];
 		let highestOrder = 0;
 		const filtered = tasks.filter((task) => {
+			if (task.status === 1) return false;
 			if (task.board_id === boardId) {
 				if (task.order > highestOrder) {
 					highestOrder = task.order;

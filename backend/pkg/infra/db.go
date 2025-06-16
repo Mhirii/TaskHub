@@ -21,6 +21,7 @@ func InitDB(cfg config.Config) (*gorm.DB, error) {
 	db.AutoMigrate(&models.Projects{})
 	db.AutoMigrate(&models.Boards{})
 	db.AutoMigrate(&models.Tasks{})
+	db.AutoMigrate(&models.UserProjects{})
 
 	if err := db.Raw("SELECT 1").Error; err != nil {
 		return nil, fmt.Errorf("database connection test failed: %w", err)

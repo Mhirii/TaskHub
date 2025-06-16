@@ -61,6 +61,7 @@
 		? new Date(task.due_date * 1000)
 		: undefined;
 	$formData.assignee_id = task.assignee_id;
+	$formData.status = task.status;
 
 	let calendarValue: DateValue | undefined = task.due_date
 		? today("UTC").set({
@@ -79,6 +80,7 @@
 		{ value: 4, label: priorities[4] },
 		{ value: 5, label: priorities[5] },
 	];
+	console.log($formData);
 </script>
 
 <Card class="w-full max-w-md lg:max-w-2xl shadow-md ">
@@ -122,6 +124,31 @@
 					</Form.Field>
 
 					<div class="grid gap-4 md:grid-cols-2">
+						<Form.Field {form} name="status">
+							<Form.Control>
+								{#snippet children({ props })}
+									<Form.Label class="">Status</Form.Label>
+									<Select.Root
+										{...props}
+										type="single"
+										value={$formData.status?.toString()}
+										onValueChange={(v) => ($formData.status = Number(v))}
+									>
+										<Select.Trigger class="w-full">
+											<Select.Label>
+												{$formData.status === 1 ? "Closed" : "Open"}
+											</Select.Label>
+										</Select.Trigger>
+										<Select.Content>
+											<Select.Item value="0" label="Open" />
+											<Select.Item value="1" label="Closed" />
+										</Select.Content>
+									</Select.Root>
+								{/snippet}
+							</Form.Control>
+							<Form.FieldErrors />
+						</Form.Field>
+
 						<Form.Field {form} name="priority" class="w-full">
 							<Form.Control>
 								{#snippet children({ props })}
@@ -194,7 +221,9 @@
 										{...props}
 										bind:value={$formData.assignee_id}
 										type="number"
+										defaultValue={0}
 										class=""
+										required={false}
 									/>
 								{/snippet}
 							</Form.Control>

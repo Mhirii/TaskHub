@@ -28,6 +28,8 @@ func main() {
 		panic(err)
 	}
 
+	infra.SeedAdminUser(db, *cfg)
+
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -49,11 +51,14 @@ func main() {
 	usersRepo := repo.NewUsersRepo(db)
 	usersSvc := services.NewUsersService(usersRepo)
 
+	userProjectsRepo := repo.NewUserProjectsRepo(db)
+	userProjectsSvc := services.NewUserProjectsService(*userProjectsRepo)
+
 	handlers.NewAuthHandlers(authSvc).WriteGroup(e.Group("/auth"))
 	handlers.NewBoardHandlers().WriteGroup(e.Group("/boards"))
-	handlers.NewProjectHandlers(projectsSvc).WriteGroup(e.Group("/projects"))
+	handlers.NewProjectHandlers(projectsSvc, *userProjectsSvc).WriteGroup(e.Group("/projects"))
 	handlers.NewTaskHandlers(tasksSvc).WriteGroup(e.Group("/tasks"))
-	handlers.NewUsersHandlers(usersSvc).WriteGroup(e.Group("/users"))
+	handlers.NewUsersHandlers(usersSvc, *userProjectsSvc).WriteGroup(e.Group("/users"))
 
 	e.Logger.Fatal(e.Start(":" + cfg.Server.Port))
 }
