@@ -24,10 +24,13 @@
 			url: "/app/projects",
 			icon: NotepadTextIcon,
 			isActive: false,
-			items: projects.map((p) => ({
-				title: p.name,
-				url: `/app/projects/${p.id}`,
-			})),
+			items:
+				projects?.length > 0
+					? projects.map((p) => ({
+							title: p.name,
+							url: `/app/projects/${p.id}`,
+						}))
+					: undefined,
 		},
 		{
 			title: "Users",
@@ -82,7 +85,7 @@
 							{/if}
 							<Collapsible.Content>
 								<Sidebar.MenuSub>
-									{#if item.items && item.items.length > 0}
+									{#if !!item.items && item.items.length > 0}
 										{#each item.items ?? [] as subItem (subItem.title)}
 											<Sidebar.MenuSubItem>
 												<Sidebar.MenuSubButton>

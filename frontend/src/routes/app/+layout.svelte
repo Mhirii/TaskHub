@@ -27,14 +27,14 @@
 			};
 		});
 	};
-	let breads = $state(buildBreads());
+	let breads = $derived(buildBreads());
 </script>
 
 <Sidebar.Provider>
 	{#await data.projects}
 		<span></span>
 	{:then projects}
-		<AppSidebar {projects} />
+		<AppSidebar {projects} user={data.user} />
 	{/await}
 	<Sidebar.Inset>
 		<header

@@ -41,8 +41,8 @@
 </script>
 
 <Card class="mb-2">
-	<CardHeader class="px-2 flex flex-row items-center justify-between w-full">
-		<div class="flex flex-col items-center gap-2 w-full justify-start">
+	<CardHeader class="px-2 flex flex-row items-center justify-start  w-full">
+		<div class="flex flex-col items-center gap-2 px-2">
 			<CardTitle>
 				<p class="font-medium">{task.name}</p>
 			</CardTitle>

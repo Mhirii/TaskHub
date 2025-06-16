@@ -39,7 +39,9 @@
 	},
 	"dependencies": {
 		"@tanstack/svelte-query": "^5.80.7",
+		"@types/jsonwebtoken": "^9.0.10",
 		"chart.js": "^4.4.9",
+		"jsonwebtoken": "^9.0.2",
 		"svelte-chartjs": "^3.1.5"
 	}
 }

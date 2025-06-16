@@ -12,7 +12,8 @@
 		CardDescription,
 	} from "$lib/components/ui/card";
 	import type { Project } from "$lib/types";
-	import { Plus } from "@lucide/svelte";
+	import { AlertCircleIcon, Plus } from "@lucide/svelte";
+	import * as Alert from "$lib/components/ui/alert/index.js";
 
 	let isLoading = true;
 	let projects: Project[] = [];
@@ -76,9 +77,15 @@
 				</div>
 			</div>
 		{:else}
-			<div class="card text-center py-10">
-				<p class="text-destructive">Error loading projects</p>
-			</div>
+			<Alert.Root variant="destructive">
+				<AlertCircleIcon />
+				<Alert.Title>You have no projects.</Alert.Title>
+				<Alert.Description>
+					<p>
+						Please contact your administrator if you think this is an issue.
+					</p>
+				</Alert.Description>
+			</Alert.Root>
 		{/if}
 	</div>
 </div>

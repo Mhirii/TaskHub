@@ -10,6 +10,7 @@
 	import { zodClient } from "sveltekit-superforms/adapters";
 	import { setAccess, setRefresh } from "./store";
 	import { goto } from "$app/navigation";
+	import { userStore } from "$lib/store/user";
 
 	let { data }: { data: { form: SuperValidated<Infer<FormSchema>> } } =
 		$props();
@@ -23,6 +24,13 @@
 			const refresh = result.data.refresh_token;
 			setAccess(access);
 			setRefresh(refresh);
+			console.log(result.data);
+			userStore.setUser({
+				username: result.data.user.username,
+				email: result.data.user.email,
+				avatar: "/avatars/user.jpg",
+			});
+
 			await goto("/");
 		},
 	});
